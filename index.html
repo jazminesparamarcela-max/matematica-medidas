@@ -126,7 +126,7 @@
       border-left: 4px solid var(--accent);
     }
 
-    /* Botón SOS y Ayuda desplegable */
+    /* Botón SOS Chiquito */
     .sos-container {
       margin-bottom: 15px;
       text-align: center;
@@ -136,7 +136,7 @@
       background-color: var(--error);
       color: white;
       border: none;
-      padding: 6px 14px;
+      padding: 6px 16px;
       border-radius: 20px;
       font-size: 0.85rem;
       font-weight: bold;
@@ -149,34 +149,44 @@
       background-color: #a71d1d;
     }
 
+    /* Ayuda didáctica con saltos de sapito */
     .exercise-helper {
       background: #fff9db;
       border: 1px dashed #f59f00;
       border-radius: 8px;
-      padding: 12px;
+      padding: 14px;
       margin-bottom: 15px;
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       color: #5c4d00;
       text-align: center;
-      display: none; /* Oculto por defecto hasta que toque el SOS */
+      display: none;
     }
 
-    .path-visual {
+    .frog-path {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-      font-weight: bold;
+      gap: 6px;
+      margin-top: 10px;
       flex-wrap: wrap;
     }
 
-    .path-step {
+    .frog-node {
       background: white;
-      padding: 4px 8px;
       border: 1px solid #f59f00;
-      border-radius: 4px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-weight: bold;
       font-size: 0.85rem;
+    }
+
+    .frog-jump {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.75rem;
+      color: #b7791f;
+      font-weight: bold;
     }
 
     .tab-buttons {
@@ -298,7 +308,6 @@
       background: #f0fdf4;
     }
 
-    /* Animación de latido sutil */
     @keyframes latidoSuave {
       0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 235, 153, 0.4); }
       50% { transform: scale(1.02); box-shadow: 0 0 10px 3px rgba(255, 235, 153, 0.7); }
@@ -403,7 +412,6 @@
       const feedback = document.getElementById('quizFeedback');
       if (feedback) feedback.innerText = '';
 
-      // Ocultar la ayuda SOS al cambiar de ejercicio
       const helperEl = document.getElementById('exerciseHelper');
       if (helperEl) helperEl.style.display = 'none';
 
@@ -425,29 +433,29 @@
       const qEl = document.getElementById('quizQuestion');
       if (qEl) qEl.innerText = `¿Cuántos ${to} (${unitNames[to]}) son ${formatearNumero(val)} ${from} (${unitNames[from]})?`;
 
-      // Construir la ayuda visual específica de las unidades involucradas
+      // Calcular saltos y formatear con puntos de mil
       const indexFrom = unitOrder.indexOf(from);
       const indexTo = unitOrder.indexOf(to);
       const isRight = indexFrom < indexTo;
-      const operation = isRight ? "multiplicar" : "dividir";
-      const arrowSymbol = isRight ? " ➔ " : " ⬅ ";
+      const operation = isRight ? "multiplicar (agregar ceros / correr coma a la derecha)" : "dividir (quitar ceros / correr coma a la izquierda)";
       const diff = Math.abs(indexFrom - indexTo);
-      const cerosAyuda = "1" + "0".repeat(diff);
+      const divisorRaw = Math.pow(10, diff);
+      const divisorFormateado = formatearNumero(divisorRaw);
 
-      // Generar los pasos intermedios del caminito
-      let pathHtml = '';
+      // Crear secuencia de "saltos de sapito" visuales
+      let frogHtml = '';
       const stepIncrement = isRight ? 1 : -1;
       for (let i = indexFrom; isRight ? i <= indexTo : i >= indexTo; i += stepIncrement) {
-        pathHtml += `<span class="path-step">${unitOrder[i]}</span>`;
+        frogHtml += `<div class="frog-node">${unitOrder[i]}</div>`;
         if (i !== indexTo) {
-          pathHtml += `<span>${arrowSymbol}</span>`;
+          frogHtml += `<div class="frog-jump"><span>🐸 salto x10</span><span>${isRight ? '➔' : '⬅'}</span></div>`;
         }
       }
 
       if (helperEl) {
         helperEl.innerHTML = `
-          💡 <strong>Ayuda didáctica:</strong> Para pasar de <strong>${unitNames[from]}</strong> a <strong>${unitNames[to]}</strong> debes <strong>${operation}</strong> por <strong>${cerosAyuda}</strong>.<br>
-          <div class="path-visual">${pathHtml}</div>
+          <strong>Guía de conversión:</strong> Para pasar de <strong>${unitNames[from]}</strong> a <strong>${unitNames[to]}</strong> debes <strong>${operation}</strong> por <strong>${divisorFormateado}</strong>.<br>
+          <div class="frog-path">${frogHtml}</div>
         `;
       }
 
@@ -493,7 +501,7 @@
       
       buttons.forEach(b => b.disabled = true);
 
-      // Mostrar la ayuda SOS automáticamente si el alumno falla
+      // Mostrar el SOS automáticamente si el alumno falla para que aprenda
       const helperEl = document.getElementById('exerciseHelper');
       if (helperEl) helperEl.style.display = 'block';
 
@@ -594,12 +602,12 @@
         <div class="score-board">Aciertos: <span id="score">0</span></div>
         <div class="question-text" id="quizQuestion">Cargando pregunta...</div>
         
-        <!-- Botón SOS Chiquito y Opcional -->
+        <!-- Botón SOS Limpio -->
         <div class="sos-container">
-          <button class="sos-btn" onclick="toggleSos()">🆘 Ayuda SOS (Micropista)</button>
+          <button class="sos-btn" onclick="toggleSos()">🆘 SOS</button>
         </div>
 
-        <!-- Guía visual latente con el caminito exclusivo del ejercicio -->
+        <!-- Guía visual latente de saltos -->
         <div id="exerciseHelper" class="exercise-helper"></div>
 
         <div class="options-grid" id="optionsContainer"></div>
