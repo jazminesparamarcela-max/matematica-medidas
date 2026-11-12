@@ -1,14 +1,490 @@
 <!DOCTYPE html>
 <html lang="es-AR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Medidas de longitud</title>
-    <link rel="icon" type="image/svg+xml" href="/matematica-medidas/favicon.svg" />
-    <script type="module" crossorigin src="/matematica-medidas/assets/index-zNdA5eAF.js"></script>
-    <link rel="stylesheet" crossorigin href="/matematica-medidas/assets/index-BdIBCqAa.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medidas de Longitud - Práctica</title>
+  <style>
+    :root {
+      --primary: #2a9d90;
+      --primary-hover: #218277;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #2b2d42;
+      --border: #e0e0e0;
+      --success: #2e7d32;
+      --error: #c62828;
+      --accent: #f4a462;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      max-width: 650px;
+      width: 100%;
+      padding: 25px;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 5px;
+      font-size: 1.8rem;
+    }
+
+    p.subtitle {
+      text-align: center;
+      color: #6c757d;
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+    }
+
+    /* Patrón de Medidas Completo */
+    .pattern-box {
+      background: #eef9f8;
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .pattern-title {
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .units-stair {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-weight: bold;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      overflow-x: auto;
+    }
+
+    .unit-step {
+      padding: 4px 8px;
+      background: #f0fdf4;
+      border: 1px solid var(--primary);
+      border-radius: 4px;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    .arrow-indicator {
+      color: var(--accent);
+      font-size: 0.8rem;
+    }
+
+    .rule-explanation {
+      font-size: 0.82rem;
+      color: #495057;
+      line-height: 1.4;
+      text-align: left;
+      background: white;
+      padding: 10px;
+      border-radius: 6px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .tab-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      background: #e9ecef;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    input, select {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+      min-width: 120px;
+    }
+
+    button.btn-main {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button.btn-main:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .result-box {
+      margin-top: 15px;
+      padding: 12px;
+      background-color: #e8f5e9;
+      color: var(--success);
+      border-radius: 6px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      display: none;
+    }
+
+    .quiz-card {
+      background: #f8f9fa;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .score-board {
+      font-size: 1rem;
+      color: #495057;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .question-text {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .option-btn {
+      padding: 12px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #f0fdf4;
+    }
+
+    /* Estilos dinámicos para aciertos y errores en los botones */
+    .option-btn.correct-btn {
+      background-color: #d4edda !important;
+      color: #155724 !important;
+      border-color: #c3e6cb !important;
+    }
+
+    .option-btn.incorrect-btn {
+      background-color: #f8d7da !important;
+      color: #721c24 !important;
+      border-color: #f5c6cb !important;
+    }
+
+    .quiz-feedback {
+      font-weight: bold;
+      min-height: 24px;
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+
+    .quiz-feedback.correct { color: var(--success); }
+    .quiz-feedback.incorrect { color: var(--error); }
+  </style>
+
+  <script>
+    function formatearNumero(num) {
+      if (isNaN(num)) return num;
+      return Number(num).toLocaleString('es-AR', { maximumFractionDigits: 6 });
+    }
+
+    window.switchTab = function(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      if (tabName === 'conversor') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-conversor').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-ejercicios').classList.add('active');
+        if (!currentQuizData.from) {
+          window.nuevoEjercicio();
+        }
+      }
+    };
+
+    const factors = {
+      km: 1000,
+      hm: 100,
+      dam: 10,
+      m: 1,
+      dm: 0.1,
+      cm: 0.01,
+      mm: 0.001
+    };
+
+    const unitNames = {
+      km: "kilómetros",
+      hm: "hectómetros",
+      dam: "decámetros",
+      m: "metros",
+      dm: "decímetros",
+      cm: "centímetros",
+      mm: "milímetros"
+    };
+
+    window.convertir = function() {
+      const val = parseFloat(document.getElementById('inputValue').value);
+      const from = document.getElementById('fromUnit').value;
+      const to = document.getElementById('toUnit').value;
+
+      if (isNaN(val)) return;
+
+      const inMeters = val * factors[from];
+      const res = inMeters / factors[to];
+
+      const box = document.getElementById('resultBox');
+      box.style.display = 'block';
+      box.innerText = `${formatearNumero(val)} ${from} = ${formatearNumero(res)} ${to}`;
+    };
+
+    let correctAnswer = 0;
+    let currentQuizData = {};
+    let score = 0;
+
+    window.nuevoEjercicio = function() {
+      const feedback = document.getElementById('quizFeedback');
+      if (feedback) feedback.innerText = '';
+
+      const units = ['km', 'hm', 'dam', 'm', 'dm', 'cm', 'mm'];
+      const from = units[Math.floor(Math.random() * units.length)];
+      let to = units[Math.floor(Math.random() * units.length)];
+      while (to === from) {
+        to = units[Math.floor(Math.random() * units.length)];
+      }
+
+      const values = [1, 2, 5, 10, 25, 50, 100, 200, 500, 1000];
+      const val = values[Math.floor(Math.random() * values.length)];
+
+      const inMeters = val * factors[from];
+      correctAnswer = inMeters / factors[to];
+
+      currentQuizData = { val, from, to };
+
+      const qEl = document.getElementById('quizQuestion');
+      if (qEl) qEl.innerText = `¿Cuántos ${to} (${unitNames[to]}) son ${formatearNumero(val)} ${from}?`;
+
+      const optionsSet = new Set();
+      optionsSet.add(Number(correctAnswer.toFixed(6)));
+
+      let intentos = 0;
+      while (optionsSet.size < 4 && intentos < 50) {
+        intentos++;
+        let fake;
+        const randomFactor = [0.1, 10, 100, 0.01, 2, 0.5][Math.floor(Math.random() * 6)];
+        fake = correctAnswer * randomFactor;
+        
+        if (fake === correctAnswer || fake <= 0) {
+          fake = correctAnswer + (intentos * 2);
+        }
+        optionsSet.add(Number(fake.toFixed(6)));
+      }
+
+      let fallbackCounter = 1;
+      while (optionsSet.size < 4) {
+        optionsSet.add(Number((correctAnswer + fallbackCounter).toFixed(6)));
+        fallbackCounter++;
+      }
+
+      const shuffledOptions = Array.from(optionsSet).sort(() => Math.random() - 0.5);
+      const container = document.getElementById('optionsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      shuffledOptions.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = `${formatearNumero(opt)} ${to}`;
+        btn.onclick = () => window.verificarRespuesta(opt, btn);
+        container.appendChild(btn);
+      });
+    };
+
+    window.verificarRespuesta = function(selected, clickedBtn) {
+      const feedback = document.getElementById('quizFeedback');
+      const buttons = document.querySelectorAll('.option-btn');
+      
+      // Desactivar todos los botones para evitar múltiples clics
+      buttons.forEach(b => b.disabled = true);
+
+      const isBiggerToSmaller = factors[currentQuizData.from] > factors[currentQuizData.to];
+      const opText = isBiggerToSmaller ? "multiplica (agrega ceros / corre la coma a la derecha)" : "divide (quita ceros / corre la coma a la izquierda)";
+
+      const isCorrect = Math.abs(selected - correctAnswer) < 0.000001;
+
+      if (isCorrect) {
+        clickedBtn.classList.add('correct-btn');
+        feedback.className = 'quiz-feedback correct';
+        feedback.innerText = `¡Correcto! Como vas de ${currentQuizData.from} a ${currentQuizData.to}, se ${opText}.`;
+        score++;
+        document.getElementById('score').innerText = score;
+        setTimeout(window.nuevoEjercicio, 2500);
+      } else {
+        clickedBtn.classList.add('incorrect-btn');
+        // Resaltar también cuál era la correcta para que el alumno aprenda
+        buttons.forEach(b => {
+          // Limpiamos el texto formateado para comparar con la respuesta correcta numérica
+          const btnVal = Number(b.innerText.split(' ')[0].replace(/\./g, '').replace(',', '.'));
+          if (Math.abs(btnVal - correctAnswer) < 0.000001) {
+            b.classList.add('correct-btn');
+          }
+        });
+
+        feedback.className = 'quiz-feedback incorrect';
+        feedback.innerText = `Incorrecto. Para pasar de ${currentQuizData.from} a ${currentQuizData.to} se ${opText}. Era ${formatearNumero(correctAnswer)} ${currentQuizData.to}.`;
+        setTimeout(window.nuevoEjercicio, 3500);
+      }
+    };
+  </script>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Medidas de Longitud</h1>
+    <p class="subtitle">Sistema Métrico Decimal Completo</p>
+
+    <!-- PATRÓN DE MEDIDAS COMPLETO Y VISIBLE -->
+    <div class="pattern-box">
+      <div class="pattern-title">Patrón de Medidas de Longitud</div>
+      <div class="units-stair">
+        <span class="unit-step">km</span>
+        <span class="arrow-indicator">➔</span>
+        <span class="unit-step">hm</span>
+        <span class="arrow-indicator">➔</span>
+        <span class="unit-step">dam</span>
+        <span class="arrow-indicator">➔</span>
+        <span class="unit-step">m</span>
+        <span class="arrow-indicator">➔</span>
+        <span class="unit-step">dm</span>
+        <span class="arrow-indicator">➔</span>
+        <span class="unit-step">cm</span>
+        <span class="arrow-indicator">➔</span>
+        <span class="unit-step">mm</span>
+      </div>
+      <div class="rule-explanation">
+        • <strong>De MAYOR a menor (➔ Derecha):</strong> Se <strong>MULTIPLICA</strong> por 10 por cada lugar (agrega ceros o corre la coma a la derecha).<br>
+        • <strong>De MENOR a mayor (⬅ Izquierda):</strong> Se <strong>DIVIDE</strong> por 10 por cada lugar (quita ceros o corre la coma a la izquierda).
+      </div>
+    </div>
+
+    <div class="tab-buttons">
+      <button class="tab-btn active" onclick="switchTab('conversor')">Calculadora / Conversor</button>
+      <button class="tab-btn" onclick="switchTab('ejercicios')">Ejercicios</button>
+    </div>
+
+    <!-- Pestaña 1: Conversor (Calculadora libre) -->
+    <div id="tab-conversor" class="tab-content active">
+      <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 10px;">Podés usar esta calculadora para verificar tus dudas antes de responder los ejercicios:</p>
+      <div class="input-group">
+        <input type="number" id="inputValue" placeholder="Cantidad" value="1" step="any" />
+        <select id="fromUnit">
+          <option value="km">Kilómetros (km)</option>
+          <option value="hm">Hectómetros (hm)</option>
+          <option value="dam">Decámetros (dam)</option>
+          <option value="m" selected>Metros (m)</option>
+          <option value="dm">Decímetros (dm)</option>
+          <option value="cm">Centímetros (cm)</option>
+          <option value="mm">Milímetros (mm)</option>
+        </select>
+        <select id="toUnit">
+          <option value="km">Kilómetros (km)</option>
+          <option value="hm">Hectómetros (hm)</option>
+          <option value="dam">Decámetros (dam)</option>
+          <option value="m">Metros (m)</option>
+          <option value="dm">Decímetros (dm)</option>
+          <option value="cm" selected>Centímetros (cm)</option>
+          <option value="mm">Milímetros (mm)</option>
+        </select>
+      </div>
+      <button class="btn-main" onclick="convertir()">Convertir</button>
+      <div id="resultBox" class="result-box"></div>
+    </div>
+
+    <!-- Pestaña 2: Ejercicios -->
+    <div id="tab-ejercicios" class="tab-content">
+      <div class="quiz-card">
+        <div class="score-board">Aciertos: <span id="score">0</span></div>
+        <div class="question-text" id="quizQuestion">Cargando pregunta...</div>
+        <div class="options-grid" id="optionsContainer"></div>
+        <div id="quizFeedback" class="quiz-feedback"></div>
+      </div>
+    </div>
+  </div>
+
+</body>
 </html>
