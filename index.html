@@ -38,7 +38,7 @@
       background-color: var(--card);
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      max-width: 650px;
+      max-width: 700px;
       width: 100%;
       padding: 25px;
     }
@@ -57,7 +57,7 @@
       font-size: 0.95rem;
     }
 
-    /* Patrón de Medidas Completo */
+    /* Patrón de Medidas con nombres completos debajo */
     .pattern-box {
       background: #eef9f8;
       border: 2px solid var(--primary);
@@ -70,7 +70,7 @@
     .pattern-title {
       font-weight: bold;
       color: var(--primary);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       font-size: 1rem;
     }
 
@@ -79,13 +79,18 @@
       justify-content: space-between;
       align-items: center;
       background: white;
-      padding: 10px;
+      padding: 12px;
       border-radius: 8px;
       border: 1px solid var(--border);
-      font-weight: bold;
-      font-size: 0.95rem;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       overflow-x: auto;
+    }
+
+    .unit-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
     }
 
     .unit-step {
@@ -94,12 +99,20 @@
       border: 1px solid var(--primary);
       border-radius: 4px;
       color: var(--primary);
-      white-space: nowrap;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+
+    .unit-name {
+      font-size: 0.72rem;
+      color: #6c757d;
+      text-transform: lowercase;
     }
 
     .arrow-indicator {
       color: var(--accent);
-      font-size: 0.8rem;
+      font-size: 0.9rem;
+      font-weight: bold;
     }
 
     .rule-explanation {
@@ -232,7 +245,6 @@
       background: #f0fdf4;
     }
 
-    /* Estilos dinámicos para aciertos y errores en los botones */
     .option-btn.correct-btn {
       background-color: #d4edda !important;
       color: #155724 !important;
@@ -321,7 +333,8 @@
       const feedback = document.getElementById('quizFeedback');
       if (feedback) feedback.innerText = '';
 
-      const units = ['km', 'hm', 'dam', 'm', 'dm', 'cm', 'mm'];
+      // EJERCICIOS EXCLUSIVOS ENTRE: km, m, cm, mm
+      const units = ['km', 'm', 'cm', 'mm'];
       const from = units[Math.floor(Math.random() * units.length)];
       let to = units[Math.floor(Math.random() * units.length)];
       while (to === from) {
@@ -379,7 +392,6 @@
       const feedback = document.getElementById('quizFeedback');
       const buttons = document.querySelectorAll('.option-btn');
       
-      // Desactivar todos los botones para evitar múltiples clics
       buttons.forEach(b => b.disabled = true);
 
       const isBiggerToSmaller = factors[currentQuizData.from] > factors[currentQuizData.to];
@@ -396,9 +408,7 @@
         setTimeout(window.nuevoEjercicio, 2500);
       } else {
         clickedBtn.classList.add('incorrect-btn');
-        // Resaltar también cuál era la correcta para que el alumno aprenda
         buttons.forEach(b => {
-          // Limpiamos el texto formateado para comparar con la respuesta correcta numérica
           const btnVal = Number(b.innerText.split(' ')[0].replace(/\./g, '').replace(',', '.'));
           if (Math.abs(btnVal - correctAnswer) < 0.000001) {
             b.classList.add('correct-btn');
@@ -416,25 +426,25 @@
 
   <div class="container">
     <h1>Medidas de Longitud</h1>
-    <p class="subtitle">Sistema Métrico Decimal Completo</p>
+    <p class="subtitle">Sistema Métrico Decimal</p>
 
-    <!-- PATRÓN DE MEDIDAS COMPLETO Y VISIBLE -->
+    <!-- PATRÓN DE MEDIDAS COMPLETO CON NOMBRES DEBAJO -->
     <div class="pattern-box">
       <div class="pattern-title">Patrón de Medidas de Longitud</div>
       <div class="units-stair">
-        <span class="unit-step">km</span>
+        <div class="unit-column"><span class="unit-step">km</span><span class="unit-name">kilómetro</span></div>
         <span class="arrow-indicator">➔</span>
-        <span class="unit-step">hm</span>
+        <div class="unit-column"><span class="unit-step">hm</span><span class="unit-name">hectómetro</span></div>
         <span class="arrow-indicator">➔</span>
-        <span class="unit-step">dam</span>
+        <div class="unit-column"><span class="unit-step">dam</span><span class="unit-name">decámetro</span></div>
         <span class="arrow-indicator">➔</span>
-        <span class="unit-step">m</span>
+        <div class="unit-column"><span class="unit-step">m</span><span class="unit-name">metro</span></div>
         <span class="arrow-indicator">➔</span>
-        <span class="unit-step">dm</span>
+        <div class="unit-column"><span class="unit-step">dm</span><span class="unit-name">decímetro</span></div>
         <span class="arrow-indicator">➔</span>
-        <span class="unit-step">cm</span>
+        <div class="unit-column"><span class="unit-step">cm</span><span class="unit-name">centímetro</span></div>
         <span class="arrow-indicator">➔</span>
-        <span class="unit-step">mm</span>
+        <div class="unit-column"><span class="unit-step">mm</span><span class="unit-name">milímetro</span></div>
       </div>
       <div class="rule-explanation">
         • <strong>De MAYOR a menor (➔ Derecha):</strong> Se <strong>MULTIPLICA</strong> por 10 por cada lugar (agrega ceros o corre la coma a la derecha).<br>
@@ -444,12 +454,12 @@
 
     <div class="tab-buttons">
       <button class="tab-btn active" onclick="switchTab('conversor')">Calculadora / Conversor</button>
-      <button class="tab-btn" onclick="switchTab('ejercicios')">Ejercicios</button>
+      <button class="tab-btn" onclick="switchTab('ejercicios')">Ejercicios (km, m, cm, mm)</button>
     </div>
 
-    <!-- Pestaña 1: Conversor (Calculadora libre) -->
+    <!-- Pestaña 1: Conversor (Calculadora libre con todas las medidas) -->
     <div id="tab-conversor" class="tab-content active">
-      <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 10px;">Podés usar esta calculadora para verificar tus dudas antes de responder los ejercicios:</p>
+      <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 10px;">Podés usar esta calculadora libre con todas las unidades para verificar tus dudas:</p>
       <div class="input-group">
         <input type="number" id="inputValue" placeholder="Cantidad" value="1" step="any" />
         <select id="fromUnit">
