@@ -245,10 +245,18 @@
       background: #f0fdf4;
     }
 
+    /* Animación de latido sutil con amarillo pastel suave */
+    @keyframes latidoSuave {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 235, 153, 0.4); }
+      50% { transform: scale(1.02); box-shadow: 0 0 10px 3px rgba(255, 235, 153, 0.7); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 235, 153, 0.4); }
+    }
+
     .option-btn.correct-btn {
-      background-color: #d4edda !important;
-      color: #155724 !important;
-      border-color: #c3e6cb !important;
+      background-color: #fff9db !important; /* Amarillo pastel muy suave */
+      color: #5c4d00 !important;
+      border-color: #ffe066 !important;
+      animation: latidoSuave 1.4s infinite ease-in-out;
     }
 
     .option-btn.incorrect-btn {
@@ -312,17 +320,17 @@
 
     window.convertir = function() {
       const val = parseFloat(document.getElementById('inputValue').value);
-      const from = document.getElementById('fromUnit').value;
-      const to = document.getElementById('toUnit').value;
+      const unidadOrigen = document.getElementById('calcFromUnit').value;
+      const unidadDestino = document.getElementById('calcToUnit').value;
 
       if (isNaN(val)) return;
 
-      const inMeters = val * factors[from];
-      const res = inMeters / factors[to];
+      const inMeters = val * factors[unidadOrigen];
+      const res = inMeters / factors[unidadDestino];
 
       const box = document.getElementById('resultBox');
       box.style.display = 'block';
-      box.innerText = `${formatearNumero(val)} ${from} = ${formatearNumero(res)} ${to}`;
+      box.innerText = `${formatearNumero(val)} ${unidadOrigen} son ${formatearNumero(res)} ${unidadDestino}`;
     };
 
     let correctAnswer = 0;
@@ -333,7 +341,6 @@
       const feedback = document.getElementById('quizFeedback');
       if (feedback) feedback.innerText = '';
 
-      // EJERCICIOS EXCLUSIVOS ENTRE: km, m, cm, mm
       const units = ['km', 'm', 'cm', 'mm'];
       const from = units[Math.floor(Math.random() * units.length)];
       let to = units[Math.floor(Math.random() * units.length)];
@@ -350,7 +357,7 @@
       currentQuizData = { val, from, to };
 
       const qEl = document.getElementById('quizQuestion');
-      if (qEl) qEl.innerText = `¿Cuántos ${to} (${unitNames[to]}) son ${formatearNumero(val)} ${from}?`;
+      if (qEl) qEl.innerText = `¿Cuántos ${to} (${unitNames[to]}) son ${formatearNumero(val)} ${from} (${unitNames[from]})?`;
 
       const optionsSet = new Set();
       optionsSet.add(Number(correctAnswer.toFixed(6)));
@@ -399,8 +406,15 @@
 
       const isCorrect = Math.abs(selected - correctAnswer) < 0.000001;
 
+      // Marcar la respuesta correcta con el latido suave en amarillo pastel
+      buttons.forEach(b => {
+        const btnVal = Number(b.innerText.split(' ')[0].replace(/\./g, '').replace(',', '.'));
+        if (Math.abs(btnVal - correctAnswer) < 0.000001) {
+          b.classList.add('correct-btn');
+        }
+      });
+
       if (isCorrect) {
-        clickedBtn.classList.add('correct-btn');
         feedback.className = 'quiz-feedback correct';
         feedback.innerText = `¡Correcto! Como vas de ${currentQuizData.from} a ${currentQuizData.to}, se ${opText}.`;
         score++;
@@ -408,13 +422,6 @@
         setTimeout(window.nuevoEjercicio, 2500);
       } else {
         clickedBtn.classList.add('incorrect-btn');
-        buttons.forEach(b => {
-          const btnVal = Number(b.innerText.split(' ')[0].replace(/\./g, '').replace(',', '.'));
-          if (Math.abs(btnVal - correctAnswer) < 0.000001) {
-            b.classList.add('correct-btn');
-          }
-        });
-
         feedback.className = 'quiz-feedback incorrect';
         feedback.innerText = `Incorrecto. Para pasar de ${currentQuizData.from} a ${currentQuizData.to} se ${opText}. Era ${formatearNumero(correctAnswer)} ${currentQuizData.to}.`;
         setTimeout(window.nuevoEjercicio, 3500);
@@ -457,12 +464,22 @@
       <button class="tab-btn" onclick="switchTab('ejercicios')">Ejercicios (km, m, cm, mm)</button>
     </div>
 
-    <!-- Pestaña 1: Conversor (Calculadora libre con todas las medidas) -->
+    <!-- Pestaña 1: Conversor -->
     <div id="tab-conversor" class="tab-content active">
-      <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 10px;">Podés usar esta calculadora libre con todas las unidades para verificar tus dudas:</p>
+      <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 10px;">Calculadora en orden natural (igual que las preguntas de los ejercicios):</p>
       <div class="input-group">
-        <input type="number" id="inputValue" placeholder="Cantidad" value="1" step="any" />
-        <select id="fromUnit">
+        <input type="number" id="inputValue" placeholder="Cantidad" value="5" step="any" />
+        <select id="calcFromUnit">
+          <option value="km">Kilómetros (km)</option>
+          <option value="hm">Hectómetros (hm)</option>
+          <option value="dam">Decámetros (dam)</option>
+          <option value="m">Metros (m)</option>
+          <option value="dm">Decímetros (dm)</option>
+          <option value="cm">Centímetros (cm)</option>
+          <option value="mm" selected>Milímetros (mm)</option>
+        </select>
+        <span style="display: flex; align-items: center; font-weight: bold; color: var(--primary);">a</span>
+        <select id="calcToUnit">
           <option value="km">Kilómetros (km)</option>
           <option value="hm">Hectómetros (hm)</option>
           <option value="dam">Decámetros (dam)</option>
@@ -471,17 +488,8 @@
           <option value="cm">Centímetros (cm)</option>
           <option value="mm">Milímetros (mm)</option>
         </select>
-        <select id="toUnit">
-          <option value="km">Kilómetros (km)</option>
-          <option value="hm">Hectómetros (hm)</option>
-          <option value="dam">Decámetros (dam)</option>
-          <option value="m">Metros (m)</option>
-          <option value="dm">Decímetros (dm)</option>
-          <option value="cm" selected>Centímetros (cm)</option>
-          <option value="mm">Milímetros (mm)</option>
-        </select>
       </div>
-      <button class="btn-main" onclick="convertir()">Convertir</button>
+      <button class="btn-main" onclick="convertir()">Calcular</button>
       <div id="resultBox" class="result-box"></div>
     </div>
 
